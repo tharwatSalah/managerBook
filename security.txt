@@ -1,0 +1,6 @@
+12020 what_is_your_first_job delevery
+12345 what_is_first_place_you_worked_at almamaleek_super_market
+12324 what_is_your_best_frend_name tharwat_salah
+12344 what_is_the_last_five_digits_in_your_national_ID(from_right) 65739
+12345 what_is_the_name_of_your_primary_school algafra_primary_school
+
