@@ -25,7 +25,6 @@
         #return $currentPage ;
         header( "location:$currentPage" ) ;
     }
-
     class main{
         private $users ;
         #public $users ;
@@ -64,13 +63,11 @@
                 // Fetch all users to check 
                 if( !$allUsers = $this -> users ){
                     throw new exception( "Failed to collect Users!" ) ;
-                    exit() ;
                 }
                 for( $i = 0 ; $i < count($allUsers) ; $i++ ){
                     if( !$currentUser = $allUsers[$i] ){
-                        throw new exception( "An error occurred!" ) ;
                         // set a method to feedback error result
-                        //exit() ;
+                        throw new exception( "An error occurred!" ) ;
                     }else{
                         $user2find = $currentUser['userName'] ;
                         $password2find = $currentUser['password'] ;
@@ -97,7 +94,6 @@
                                         $error = $mysqli -> error_list ;
                                         $err = $error[0]['error'] ;
                                         throw new exception( "$err" ) ;
-                                        //exit() ;
                                     }
                                     $table = $field[0] -> table ;
                                     $table = strtolower($table) ;
@@ -123,25 +119,21 @@
                                 $err = $error[0]['error'] ;
                                 throw new exception( "$err" ) ;
                                 $mysqli -> close() ;
-                                //exit() ;
                             }
                         }else{
                             throw new exception( "Sorry. Something is wrong!" ) ;
                         }
-
                     }else{
-                        $feedback = "User name OR Password is incorrect!" ;
-                        echo $feedback ;
-                        exit() ;
+                        throw new exception( "User name OR Password is incorrect!" ) ;
                     }
                 }
-                //exit() ;
+                exit() ;
             }catch( Exception $e ){
-                echo $e -> getMessage() ;
+                $result = $e -> getMessage() ;
+                return $result ;
                 exit() ;
             }
         }
-
     
         # Forgot Password
         public function forgotPassword( $username ){
@@ -187,14 +179,7 @@
             } 
         }
 
-    }
-
-    $test = new main() ;
-    // Log in
-    if( isset($_POST['logIn']) ){
-        $username = $_POST['username'] ;
-        $password = $_POST['password'] ;
-        $test -> logIn( $username , $password ) ;
+        # Create a User
     }
     
     /*

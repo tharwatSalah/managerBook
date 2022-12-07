@@ -59,7 +59,7 @@
 
     
     session_start() ;
-    require_once "core.php" ;
+    require_once "main.php" ;
 
     if( $_SESSION ){
         echo "Hello ".$_SESSION['username']."<br>" ;
@@ -72,6 +72,6 @@
         session_destroy() ;
         refresh() ;
     }
-    echo "<a href=core.php>Go Back</a>" ;
+    echo "<a href=ui.php>Go Back</a>" ;
     
 ?>
