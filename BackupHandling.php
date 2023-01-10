@@ -134,6 +134,7 @@
                 workersCount int ,
                 workers varchar(255) ,
                 specifications varchar(255) ,
+                status varchar(100) ,
                 agreed FLOAT(7,3) ,
                 paymentMethod varchar(20) ,
                 payments varchar(255) ,

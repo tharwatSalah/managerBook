@@ -86,34 +86,9 @@
                 <input type="password" name="password" placeholder="Password"><br>
                 <input type="submit" name="logIn" value="Log in">
             </form><?=@$ob?>
-            <a href="forgotPassword.php">Forgot Password</a>
+            <br>
+            <a href="test_forgotPassword.php">Forgot Password</a><br>
+            <a href="signUp.php">Sign Up</a><br>
         </div>
-        <br>
-        <!-- Forgot Password Form -->
-        <div class="example">
-            <h3>Forgot Password</h3>
-            <form method="post" action="<?php echo htmlspecialchars( $_SERVER['PHP_SELF'] );?>" >
-                <input type="string" name="username" placeholder="User Name"><br>
-                <?=@$ob2?>
-                <input type="submit" name="forgotPassword" value="Submit">
-            </form>
-        </div>
-        <br>
-        <?php
-        # Reset Password Form
-        function resetPasswordForm( $username ){
-        $username = filterInput( $username ) ; ?>
-        <h3>Reset Password</h3>
-        <p>Type your New Password</p>
-        <form method='post' action='<?php echo htmlspecialchars( $_SERVER['PHP_SELF'] );?>'>
-            <input type='hidden' name='username' value='<?=$username?>'>
-            <input type='password' name='password' placeholder='New Password'><br>
-            <input type='password' name='reEnterPassword' placeholder='Re-Enter Password'><br>
-            <input type='submit' name='resetPassword' value='Change Password'>
-            </form>
-        <?php
-    }
-    ?>
-
     </body>
 </html>
