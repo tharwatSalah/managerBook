@@ -1,6 +1,6 @@
 <?php
     require_once "ob.php" ;
-     
-    $thisPage = "errands.php" ;
+        
+    $thisPage = "statistics.php" ;
     setcookie( "targetPage" , $thisPage ) ;
 ?>
