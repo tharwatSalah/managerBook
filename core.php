@@ -195,7 +195,7 @@
                             session_start() ;
                             $_SESSION['username'] = $username ;
                             $_SESSION['password'] = $password ;
-                            header( "location:ui\\test.php" ) ;
+                            header( "location:ui/test.php" ) ;
                         }elseif( $i == count( $allUsers )-1 ){
                             throw new exception( "User name OR Password is incorrect!<br>" ) ;
                         }
@@ -345,7 +345,7 @@
                 $email = filter_var( $email , FILTER_VALIDATE_EMAIL ) ;
                 $securityQuestions = "src/".uniqid( "sec" ).".txt" ;
                 
-                $registrationDate = time() ;
+                $registrationDate = date( "Y-m-d" , time() ) ; 
 
                 // Security Questions and Answers handling
                 $q1 = filterInput( $q1 ) ;
@@ -430,7 +430,7 @@
                     session_start() ;
                     $_SESSION['username'] = $username ;
                     $_SESSION['password'] = $password ;
-                    header( "refresh:5 ; url=test.php" ) ;
+                    header( "refresh:5 ; url=ui/test.php" ) ;
                     exit() ;
                 }else{
                     $mysqli -> close() ;
@@ -569,7 +569,7 @@
                             session_start() ;
                             $_SESSION['username'] = $username ;
                             $_SESSION['password'] = $password ;
-                            header( "refresh:5 ; url=test.php" ) ;
+                            header( "refresh:5 ; url=ui/test.php" ) ;
                             exit() ;
                         }else{
                             throw new exception( "Failed to change your Password!" ) ;

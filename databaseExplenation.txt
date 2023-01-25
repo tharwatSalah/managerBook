@@ -25,10 +25,10 @@ users [
 ]
 
 projects [
-        1- specifications(file) | file( id , demand , quantity , description ) | Examples( demand=[windows,doors,side_walk,etc...] , quantity=[3,15,etc..] , description=[hight:1.5m,width:3m,color:blak,etc....] )
+        1- specifications(file) | file( id , quantity , demand , description ) | Examples( demand=[windows,doors,side_walk,etc...] , quantity=[3,15,etc..] , description=[hight:1.5m,width:3m,color:blak,etc....] )
         2- photos(file) | file( id , img )
         3- design(file) | file( id , img ) 
-        4- payments(file) | file( id , date{Y-M-D} , amount , notes )
+        4- payments(file) | file( id , date{Y-M-D} , paymentType{cache,bank_acount,other} ,  amount , notes )
         5- addition_and_subtraction(file) | file( id , date{Y-M-D} , type{addition||subtraction} , amount , notes )
     ]
 

@@ -4,6 +4,7 @@
         # Search Handling
         public function searchHandling( $data , $search ){
             try{
+                /*
                 $keys = [] ;
                 $finalResult = [] ;
                 
@@ -39,8 +40,14 @@
                     }
                 }
                 return $finalResult ;
+                */
+                if( preg_grep( "/$search.|$search/i" , $data ) ){
+                    return TRUE ;
+                }else{
+                    return FALSE ;
+                }
             }catch( exception $e ){
-                echo $e -> getMessage() ;
+                return $e -> getMessage() ;
             }
             
         }
@@ -290,8 +297,18 @@
                 if( $table == "companies" ){
                     $companies = $this -> companies ;
                     if( $search ){
-                        $result = $this -> searchHandling( $companies , $search ) ;
-                        return $result ;
+                        $finalResult = [] ;
+                        for( $i = 0 ; $i < count($companies) ; $i++ ){
+                            $current = $companies[$i] ;
+                            if( $this -> searchHandling($current,$search) ){
+                                array_push( $finalResult , $current ) ;
+                            }elseif( $i == count($companies)-1 ){
+                                if( !count($finalResult) ){
+                                    throw new exception( "No Result Found!" ) ;
+                                }
+                            }
+                        }
+                        return $finalResult ;
                     }else{
                         $companies = array_reverse( $companies ) ;
                         return $companies ;
@@ -302,8 +319,20 @@
                 if( $table == "projects" ){
                     $projects = $this -> projects ;
                     if( $search ){ # Search
-                        $result = $this -> searchHandling( $projects , $search ) ;
-                        return $result ;
+                        $finalResult = [] ;
+                        for( $i = 0 ; $i < count($projects) ; $i++ ){
+                            $current = $projects[$i] ;
+                            if( $this -> searchHandling($current,$search) ){
+                                array_push( $finalResult , $current ) ;
+                            }elseif( $i == count($projects)-1 ){
+                                if( !count($finalResult) ){
+                                    throw new exception( "No Results Found!" ) ;
+                                }
+                            }
+                        }
+                        return $finalResult ;
+                        #$result = $this -> searchHandling( $projects , $search ) ;
+                        #return $result ;
                     }elseif( $value ){
                         if( $value == "allProjects" ){ # All Projects
                             $projects = array_reverse( $projects ) ;
@@ -313,6 +342,7 @@
                             for( $i = 0 ; $i < count($projects) ; $i++ ){
                                 $currentProject = $projects[$i] ;
                                 $projectStatus = $currentProject['status'] ;
+                                $projectStatus = strtolower( $projectStatus ) ;
                                 if( $projectStatus == "delivered" || $projectStatus == "canceled" ){
                                     continue ;
                                 }else{
@@ -326,6 +356,7 @@
                             for( $i = 0 ; $i < count($projects) ; $i++ ){
                                 $currentProject = $projects[$i] ;
                                 $projectStatus = $currentProject['status'] ;
+                                $projectStatus = strtolower( $projectStatus ) ;
                                 if( $projectStatus == "delivered" ){
                                     array_push( $finalResult , $currentProject ) ;
                                 }
@@ -337,6 +368,7 @@
                             for( $i = 0 ; $i < count($projects) ; $i++ ){
                                 $currentProject = $projects[$i] ;
                                 $projectStatus = $currentProject["status"] ;
+                                $projectStatus = strtolower( $projectStatus ) ;
                                 if( $projectStatus == "canceled" ){
                                     array_push( $finalResult , $currentProject ) ;
                                 }
@@ -504,10 +536,717 @@
                 }
         
             }catch( Exception $e ){
-                echo $e -> getMessage() ;
+                return $e -> getMessage() ;
+            }
+        }
+
+        //==============================================================================================================================================================================================//
+
+        # Action Methods
+        # Action Methods is the responsible methods of actions like "Create & Modify" ( companies , projects , errands , suppliers , workers , purchases , bills ) 
+
+        //==============================================================================================================================================================================================//
+
+
+        # Companies Section
+        #------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------#
+
+        // Create Company
+        public function createCompany( $companyName , $phone , $address , $central=NULL , $governorate=NULL , $email=NULL , $website=NULL , $commercialRegistration_NO=NULL , $taxCard_NO=NULL , $notes=NULL , $evaluation=NULL ){
+            try{
+                $userData = $this -> userData ;
+                $companies = $this -> companies ;
+                if( count($companies) ){
+                    for( $i = 0 ; $i < count($companies) ; $i++ ){
+                        $current = $companies[$i] ;
+                        $company2check = $current['name'] ;
+                        if( $companyName == $company2check ){
+                            throw new exception( "Company '$companyName' already exists!" ) ;
+                            break ;
+                        }
+                    }
+                }
+                
+
+                $userID = $userData['ID'] ;
+                $companyName = filterInput( $companyName ) ;
+                $phone = filterInput( $phone ) ;
+                $address = filterInput( $address ) ;
+                if( !$companyName || !$phone || !$address ){
+                    throw new exception( "Company Name and Phone and Address are required!" ) ;
+                }
+                $central = filterInput( $central ) ;
+                $governorate = filterInput( $governorate ) ;
+
+                $email = filter_var( $email , FILTER_SANITIZE_EMAIL ) ;
+                $email = filter_var( $email , FILTER_VALIDATE_EMAIL ) ;
+
+                // filter website
+                if( empty( $website ) ){
+                    $website = '' ;
+                }elseif( $website ){
+                    if( filterWebsite( $website ) ){
+                        $website = filterWebsite( $website ) ;
+                    }else{
+                        throw new exception( "Invalid URL!" ) ;
+                    }   
+                }
+
+                $commercialRegistration_NO = filterInput( $commercialRegistration_NO ) ;
+                $taxCard_NO = filterInput( $taxCard_NO ) ;
+                $notes = filterInput( $notes ) ;
+                $evaluation = filterInput( $evaluation ) ;
+
+                $str = "INSERT INTO compnies( userID , name , phone , address , central , governorate , email , website , commercialRegistration_NO , taxCard_NO , notes , evaluation ) 
+                VALUES( $userID , '$companyName' , '$phone' , '$address' , '$central' , '$governorate' , '$email' , '$website' , '$commercialRegistration_NO' , '$taxCard_NO' , '$notes' , '$evaluation' )" ;
+
+                $mysqli = new mysqli( host , username , password , dbname ) or die("Failed to connect to Database!" ) ; 
+                if( $mysqli -> query($str) ){
+                    $mysqli -> close() ;
+                    $companyName = $phone = $address = $central = $governorate = $email = $website = $commercialRegistration_NO = $taxCard_NO = $notes = $evaluation = "" ;
+                    return TRUE ;
+                }else{
+                    $mysqli -> close() ;
+                    throw new exception( "Failed to create a new company!" ) ;
+                }
+            }catch( Exception $e ){
+                return $e -> getMessage() ;
+            }
+        }
+
+        // Modify Company
+        public function modifyCompany( $companyID , $companyName=NULL , $phone=NULL , $address=NULL , $central=NULL , $governorate=NULL , $email=NULL , $website=NULL , $commercialRegistration_NO=NULL , $taxCard_NO=NULL , $notes=NULL , $evaluation=NULL){
+            try{
+                $companies = $this -> companies ;
+                $userData = $this -> userData ;
+                $userID = $userData['ID'] ;
+
+                $targetCompany = [] ;
+                $companyID = filterInput( $companyID ) ;
+                if( !$companyID ){ throw new exception( "Company-ID is Required!" ) ; }
+                for( $i = 0 ; $i < count($companies) ; $i++ ){
+                    $current = $companies[$i] ;
+                    $coID = $current['ID'] ; # company ID
+                    $coID = myEncoding( $coID ) ;
+                    $coU_ID = $current['userID'] ; # user ID
+                    if( $coID == $companyID && $coU_ID == $userID ){
+                        array_push( $targetCompany , $current ) ;
+                        break ;
+                    }elseif( $i == count($companies)-1 ){
+                        throw new exception( "No such a company in your data!" ) ;
+                    }
+                }
+                $company2modify = $targetCompany[0] ;
+                $companyID = $company2modify['ID'] ;
+                // store old values
+                $o_companyName = $company2modify['name'] ;
+                $o_phone = $company2modify['phone'] ;
+                $o_address = $company2modify['address'] ;
+                $o_central = $company2modify['central'] ;
+                $o_governorate = $company2modify['governorate'] ;
+                $o_email = $company2modify['email'] ;
+                $o_website = $company2modify['website'] ;
+                $o_commercialRegistration_NO = $company2modify['commercialRegistration_NO'] ;
+                $o_taxCard_NO = $company2modify['taxCard_NO'] ;
+                $o_notes = $company2modify['notes'] ;
+                $o_evaluation = $company2modify['evaluation'] ;
+                // validate new values
+                $companyName = filterInput( $companyName ) ;
+                $phone = filterInput( $phone ) ;
+                $address = filterInput( $address ) ;
+                $central = filterInput( $central ) ;
+                $governorate = filterInput( $governorate ) ;
+                $email = filter_var( $email , FILTER_SANITIZE_EMAIL ) ;
+                $email = filter_var( $email , FILTER_VALIDATE_EMAIL ) ;
+                // filter website
+                if( empty( $website ) ){
+                    $website = '' ;
+                }elseif( $website ){
+                    if( filterWebsite( $website ) ){
+                        $website = filterWebsite( $website ) ;
+                    }else{
+                        throw new exception( "Invalid URL!" ) ;
+                    }   
+                }
+                $commercialRegistration_NO = filterInput( $commercialRegistration_NO ) ;
+                $taxCard_NO = filterInput( $taxCard_NO ) ;
+                $notes = filterInput( $notes ) ;
+                $evaluation = filterInput( $evaluation ) ;
+                // modifing data
+                if( !$companyName ){ $companyName = $o_companyName ; }
+                if( !$phone ){ $phone = $o_phone ; }
+                if( !$address ){ $address = $o_address ; }
+                if( !$central ){ $central = $o_central ; }
+                if( !$governorate ){ $governorate = $o_governorate ; }
+                if( !$email ){ $email = $o_email ; }
+                if( !$website ){ $website = $o_website ; }
+                if( !$commercialRegistration_NO ){ $commercialRegistration_NO = $o_commercialRegistration_NO ; }
+                if( !$taxCard_NO ){ $taxCard_NO = $o_taxCard_NO ; }
+                if( !$notes ){ $notes = $o_notes ; }
+                if( !$evaluation ){ $evaluation = $o_evaluation ; }
+                // update the database
+                $sql = "UPDATE compnies SET name='$companyName',phone='$phone',address='$address',central='$central',governorate='$governorate',email='$email',website='$website',commercialRegistration_NO='$commercialRegistration_NO',taxCard_NO='$taxCard_NO',notes='$notes',evaluation='$evaluation' WHERE ID = '$companyID' " ;
+                $mysqli = new mysqli( host , username , password , dbname ) or die( "Database connection Failed!" ) ;
+                if( !$mysqli -> query($sql) ){
+                    $mysqli -> close() ;
+                    throw new exception( "Failed to modify '$companyName' company data!" ) ;
+                }else{
+                    $mysqli -> close() ;
+                    return TRUE ;
+                }
+                
+            }catch( Exception $e ){
+                return $e -> getMessage() ;
             }
             
         }
-        
+
+
+        //_________________________________________________________________________________________________________________________________________________________________________________________________//
+        # End Of Companies
+
+        # Start with Projects Section
+        //_________________________________________________________________________________________________________________________________________________________________________________________________//
+
+
+        # Projects Section
+        #------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------#
+
+        // Create A Project
+        public function createProject( $companyName , $name , $address=null , $central=null , $governorate=null , $specifications=null , $status=null , $deliveryDate=null , $agreed=null , $paymentDate=null , $amount=null , $paymentType=NULL , $paymentNotes=null , $photo=FALSE , $design=null , $notes=null , $evaluation=null ){
+            try{
+                $userData = $this -> userData ;
+                $companyName = filterInput( $companyName ) ;
+                $companyName = strtolower( $companyName ) ;
+                $companies = $this -> companies ;
+                $companyID = "" ;
+                for( $i = 0 ; $i < count($companies) ; $i++ ){
+                    $current = $companies[$i] ;
+                    $cN = $current['name'] ;
+                    $cN = strtolower( $cN ) ;
+                    if( $cN == $companyName ){
+                        $companyID = $current['ID'] ;
+                        break ;
+                    }elseif( $i == count($companies)-1 ){
+                        throw new exception( "Company '$companyName' Not Found!" ) ;
+                    }
+                }
+                // search for If a project exists
+                $projects = $this -> projects ;
+                $name = filterInput( $name ) ;
+                $name = strtolower( $name ) ;
+                for( $i = 0 ; $i < count($projects) ; $i++ ){
+                    $current = $projects[$i] ;
+                    $pName = $current['name'] ;
+                    $pName = strtolower( $pName ) ;
+                    if( $pName == $name ){
+                        throw new exception( "Project '$name' already exists!" ) ;
+                        break ;
+                    }
+                }
+                
+                $userID = $userData['ID'] ;
+                
+                $address = filterInput( $address ) ;
+                $central = filterInput( $central ) ;
+                $governorate = filterInput( $governorate ) ;
+                $specifications = filterInput( $specifications ) ;
+                $status = filterInput( $status ) ;
+
+                $deliveryDate = filterInput( $deliveryDate ) ;
+                if( $deliveryDate ){
+                    $deliveryDate = str_replace( "/" , " " , $deliveryDate ) ;
+                    $deliveryDate = sscanf( $deliveryDate , "%s %s %s" ) ;
+                    list( $year , $month , $day ) = $deliveryDate  ;
+                    if( !checkdate( $month , $day , $year ) ){
+                        throw new exception( "Invalid Date!" ) ;
+                    }
+                    $deliveryDate = "$year/$month/$day" ;
+                }
+
+                $agreed = filterInput( $agreed ) ;
+
+                // payments
+                $paymentDate = filterInput( $paymentDate ) ;
+                $paymentType = filterInput( $paymentType ) ;
+                $amount = filterInput( $amount ) ;
+                $paymentNotes = filterInput( $paymentNotes ) ;
+                
+                $photo = filterImage( $photo ) ;
+                if( !is_file($photo) ){
+                    $photo = "" ;
+                }
+                
+                $design = filterImage( $design ) ;
+                if( !is_file($design) ){
+                    $design = "" ;
+                }
+
+                $notes = filterInput( $notes ) ;
+                $evaluation = filterInput( $evaluation ) ;
+
+                $specificationsFile = "src/".uniqid( "speci" ) ; // create a specification file
+                $paymentsFile = "src/".uniqid( "pay" ) ; // create a payments file
+                $additionAndSubtractionFile = "src/".uniqid( "aAs" ) ; // create an additionAndSubtraction file
+
+                // validate Specifications
+                if( $specifications ){
+                    /*
+                        # specifications file is a file to store the project's details in format ( id , quantity , demand , description ) each line of the file is considered as a "request"
+                        # Examples( demand=[windows,doors,side_walk,etc...] , quantity=[3,15,etc..] , description=[hight:1.5m,width:3m,color:blak,etc....] ) 
+
+                        I will delay that because of personal reasons that related to working life , beside i will need some of front-end knowledge
+                        So i'll enough with storing the data into the file directly for now.
+
+                        * Every thing is descriped in "databaseExplenation.txt" file
+                    */
+                    $file = fopen( "$specificationsFile" , "w" ) ;
+                    fwrite( $file , $specifications ) ;
+                    fclose( $file ) ;
+                    #clearstatcache() ;
+                }
+
+                // validate payments
+                if( $amount ){
+                    if( $paymentDate ){
+                        $paymentDate = str_replace( "/" , " " , $paymentDate ) ;
+                        $paymentDate = sscanf( $paymentDate , "%s %s %s" ) ;
+                        list( $year , $month , $day ) = $paymentDate ;
+                        if( !checkdate( $month , $day , $year ) ){
+                            throw new exception( "Invalid Payment Date!" ) ;
+                        }else{
+                            $paymentDate = "$year/$month/$day" ;
+                        }
+                        
+                    }
+                    $paymentID = uniqid( "pays" ) ;
+                    # if( strlen($paymentID) < 35 ){ $paymentID = str_pad( $paymentID , 35 , "_" , STR_PAD_RIGHT ) ; }
+                    # if( strlen($paymentDate) < 10 ){ $paymentDate = str_pad( $paymentDate , 10 , "_" , STR_PAD_RIGHT ) ; }
+                    # if( strlen($amount) < 6 ){ $amount = str_pad( $amount , 6 , "_" , STR_PAD_RIGHT ) ; }
+                    # if( strlen($paymentType) < 10 ){ $amount = str_pad( $paymentType , 10 , "_" , STR_PAD_RIGHT ) ; }
+                    # if( strlen($paymentNotes) < 250 ){ $paymentNotes = str_pad($paymentNotes , 250 , "_" , STR_PAD_RIGHT) ; }
+                    $line = "$paymentID $paymentDate $amount $paymentType $paymentNotes \n" ;
+                    if( $file = @fopen( "$paymentsFile" , "w" ) ){
+                        fwrite( $file , $line ) ;
+                        fclose( $file ) ;
+                    }else{
+                        throw new exception( "Invalid Payment" ) ;
+                    }
+                    
+                }
+
+
+                $sql = "INSERT INTO projects( companyID , userID , name , address , central , governorate , specifications , status , deliveryDate , agreed , payments , additionAndSubtraction , photos , design , notes , evaluation ) 
+                VALUES( $companyID , $userID , '$name' , '$address' , '$central' , '$governorate' , '$specificationsFile' , '$status' , '$deliveryDate' , '$agreed' , '$paymentsFile' , '$additionAndSubtractionFile' , '$photo' , '$design' , '$notes' , '$evaluation' )" ;
+                
+                $mysqli = new mysqli( host , username , password , dbname ) or die( "Database Connection Failed!" ) ;
+                if( $mysqli -> query($sql) ){
+                    $mysqli -> close() ;
+                    $companyID = $userID = $name = $address = $central = $governorate = $specificationsFile = $status = $deliveryDate = $agreed = $paymentsFile = $additionAndSubtractionFile = $photo = $design = $notes = $evaluation = "" ;
+                    return TRUE ;
+                }else{
+                    $mysqli -> close() ;
+                    throw new exception( "Failed to Create a Project!" ) ;
+                }
+
+            }catch( Exception $e ){
+                return $e -> getMessage() ;
+            }
+        }
+
+
+        // Modify a Project ( 'only modify' : Boxes that are not related to financial matters , OR project status )
+        public function modifyProject( $projectID , $name=null , $address=null , $central=null , $governorate=null , $deliveryDate=null , $status=null , $photos=null , $design=null , $notes=null , $evaluation=null ){
+            try{
+                $o_name = "" ;
+                $o_address = "" ;
+                $o_central = "" ;
+                $o_governorate = "" ;
+                $o_deliveryDate = "" ;
+                $o_status = "" ;
+                $o_photos = "" ;
+                $o_design = "" ;
+                $o_notes = "" ;
+                $o_evaluation = "" ;
+
+                $projectID = filterInput( $projectID ) ;
+                if( !$projectID ){
+                    throw new exception( "Please select a project!" ) ;
+                }
+                $projects = $this -> projects ;
+                for( $i = 0 ; $i < count($projects) ; $i++ ){
+                    $current = $projects[$i] ;
+                    $proID = $current['ID'] ;
+                    if( $proID == $projectID ){
+                        $o_name = $current['name'] ;
+                        $o_address = $current['address'] ;
+                        $o_central = $current['central'] ;
+                        $o_governorate = $current['governorate'] ;
+                        $o_deliveryDate = $current['deliveryDate'] ;
+                        $o_status = $current['status'] ;
+                        $o_photos = $current['photos'] ;
+                        $o_design = $current['design'] ;
+                        $o_notes = $current['notes'] ;
+                        $o_evaluation = $current['evaluation'] ;
+                        break ;
+                    }elseif( $i == count($projects)-1 ){
+                        throw new exception( "Project Not Found!" ) ;
+                    }
+                }
+
+                $name = filterInput( $name ) ;
+                $address = filterInput( $address ) ;
+                $central = filterInput( $central ) ;
+                $governorate = filterInput( $governorate ) ;
+                $deliveryDate = filterInput( $deliveryDate ) ;
+                $status = filterInput( $status ) ;
+                $photos = filterImage( $photos ) ;
+                $design = filterImage( $design ) ;
+                $notes = filterInput( $notes ) ;
+                $evaluation = filterInput( $evaluation ) ;
+
+                if( !$name ){ $name = $o_name ; }
+                if( !$address ){ $address = $o_address ; }
+                if( !$central ){ $central = $o_central ; }
+                if( !$governorate ){ $governorate = $o_governorate ; }
+                if( $deliveryDate ){
+                    print_r( $deliveryDate ) ;
+                    $deliveryDate = str_replace("/" , " " , $deliveryDate ) ;
+                    $deliveryDate = sscanf( $deliveryDate , "%s %s %s" ) ;
+                    list( $year , $month , $day ) = $deliveryDate ;
+                    if( !@checkdate( $month , $day , $year ) ){
+                        throw new exception( "Invalid Date Format!" ) ;
+                    }else{
+                        $deliveryDate = "$year/$month/$day" ;
+                    }
+                }else{
+                    $deliveryDate = $o_deliveryDate ;
+                }
+                if( !$status ){ $status = $o_status ; }
+                if( !$photos ){ $photos = $o_photos ; }
+                if( !$design ){ $design = $o_design ; }
+                if( !$notes ){ $notes = $o_notes ; }
+                if( !$evaluation ){ $evaluation = $o_evaluation ; }
+
+                $sql = "UPDATE projects SET name = '$name' , address = '$address' , central = '$central' , governorate = '$governorate' , deliveryDate = '$deliveryDate' , status = '$status' , photos = '$photos' , design = '$design' , notes = '$notes' , evaluation = '$evaluation' WHERE ID = '$projectID' " ;
+                $mysqli = new mysqli( host , username , password , dbname ) or die( "Database connection failed!" ) ;
+                if( $mysqli -> query($sql) ){
+                    $mysqli -> close() ;
+                    $projectID = $name = $address = $central = $governorate = $deliveryDate = $photos = $design = $notes = $evaluation = "" ;
+                    $h = $_SERVER['PHP_SELF'] ;
+                    header( "refresh:3 ; url=$h" ) ;
+                    return TRUE ;
+                }else{
+                    $err = $mysqli -> error ;
+                    $mysqli -> close() ;
+                    throw new exception( "Update Failed! . $err" ) ;
+                }
+
+            }catch( exception $e ){
+                return $e -> getMessage() ;
+            }
+        }
+
+        // Receive a New Payment
+        public function receiveNewPayment( $id , $date , $amount , $paymentType , $notes=null ){
+            try{
+                if( !( $id || $date || $amount || $paymentType ) ){
+                    throw new exception( "Please fill all Data!" ) ;
+                }
+                if( !$id ){ throw new exception( "Please sellect a project!" ) ; }
+                $id = filterInput( $id ) ;
+                $date = filterInput( $date ) ;
+                $amount = filterInput( $amount ) ;
+                $paymentType = filterInput( $paymentType ) ;
+                $notes = filterInput( $notes ) ;
+
+                $projects = $this -> projects ;
+                $paymentFile = "" ;
+                for( $i = 0 ; $i < count($projects) ; $i++ ){
+                    $current = $projects[$i] ;
+                    $projectID = $current['ID'] ;
+                    if( $projectID == $id ){
+                        $paymentFile = $current['payments'] ;
+                        break ;
+                    }elseif( $i == count($projects)-1 ){
+                        throw new exception( "Payment Registration Failed!" ) ;
+                    }
+                }
+                $paymentID = uniqid( "pays" ) ;
+                $Pdate = str_replace( "/" , " " , $date ) ;
+                $Pdate = sscanf( $Pdate , "%s %s %s" ) ;
+                list( $year , $month , $day ) = $Pdate ;
+                if( !checkdate( $month , $day , $year ) ){
+                    throw new exception( "Invalid Date Format!" ) ;
+                }
+                if( $notes ){
+                    $notes = nl2br( $notes , FALSE ) ;
+                    $notes = str_replace( " " , "_" , $notes ) ;
+                }
+                $amount = @intval( $amount ) ;
+                if( @$amount < 0 ){
+                    throw new exception( "Negative Values are Not Allowed!" ) ;
+                }
+                
+                $paymentID = str_replace( " " , "_" , $paymentID ) ;
+                $date = str_replace( " " , "_" , $date ) ;
+                $amount = str_replace( " " , "_" , $amount ) ;
+                $paymentType = str_replace( " " , "_" , $paymentType ) ;
+                $notes = bin2hex( $notes ) ;
+
+                $line = "$paymentID $date $amount $paymentType $notes \n" ;
+                if( $file = @fopen( "$paymentFile" , "a" ) ){
+                    fwrite( $file , $line ) ;
+                    fclose( $file ) ;
+                    return TRUE ;
+                }else{
+                    throw new exception( "Failed to open Payments file!" ) ;
+                }
+                
+            }catch( Exception $e ){
+                return $e -> getMessage() ;
+            }
+            
+        }
+
+        // Preview all Payments
+        public function previewAllPayments( $id ){
+            try{
+                $id = filterInput( $id ) ;
+                $projects = $this -> projects ;
+                $paymentFile = "" ;
+                if( count($projects) ){
+                    for( $i = 0 ; $i < count($projects) ; $i++ ){
+                        $current = $projects[$i] ;
+                        $projectID = $current['ID'] ;
+                        if( $projectID == $id ){
+                            $paymentFile = $current['payments'] ;
+                            break ;
+                        }elseif( $i == count($projects)-1 ){
+                            throw new exception( "Cannot find Payments!" ) ;
+                        }
+                    }
+                    if( $file = @fopen("$paymentFile" , "r" ) ){
+                        $finalResult = [] ;
+                        while( $line = fgets( $file ) ){
+                            $line = sscanf( $line , "%s %s %s %s %s" ) ;
+                            list( $paymentID , $paymentDate , $paymentAmount , $paymentType , $paymentNotes ) = $line ;
+                            $paymentID = str_replace( "_" , " " , $paymentID ) ;
+                            $paymentDate = str_replace( "_" , " " , $paymentDate ) ;
+                            $paymentAmount = str_replace( "_" , " " , $paymentAmount ) ;
+                            $paymentType = str_replace( "_" , " " , $paymentType ) ;
+
+                            $paymentNotes = hex2bin( $paymentNotes ) ;
+                            $paymentNotes = str_replace( "_" , " " , $paymentNotes ) ;
+                            $paymentNotes = stripslashes( $paymentNotes ) ;
+
+                            if( $paymentID ){
+                                $x = [ "date" => $paymentDate , "amount" => $paymentAmount , "paymentType" => $paymentType , "notes" => $paymentNotes ] ;
+                                array_push( $finalResult , $x ) ;
+                            }
+                        }
+                        fclose( $file ) ;
+                        return $finalResult ;
+                    }else{
+                        throw new exception( "Failed to Read Payments!" ) ;
+                    }
+                }else{
+                    return FALSE ;
+                }
+                
+            }catch( Exception $e ){
+                return $e -> getMessage() ;
+            } 
+        }
+
+        // Modify Specifications File
+        public function modifyProjectSpecifications( $id , $content ){
+            try{
+                $id = filterInput( $id ) ;
+                $content = filterInput( $content ) ;
+                if( !$id ){ throw new exception( "Please select a Project!" ) ; }
+                
+                $projects = $this -> projects ;
+                if( !count($projects) ){
+                    return FALSE ;
+                }
+                $specifications = "" ;
+                for( $i = 0 ; $i < count($projects) ; $i++ ){
+                    $current = $projects[$i] ;
+                    $projectID = $current['ID'] ;
+                    if( $projectID == $id ){
+                        $specifications = $current['specifications'] ;
+                        break ;
+                    }elseif( $i == count($projects)-1 ){
+                        throw new exception( "Specifications File is not exists!" ) ;
+                    }
+                }
+                if( $file = fopen($specifications , "w") ){
+                    fwrite( $file , $content ) ;
+                    fclose( $file ) ;
+                    return TRUE ;
+                }else{
+                    throw new exception( "Failed to modify!" ) ;
+                }
+            }catch( Exception $e ){
+                return $e -> getMessage() ;
+            }
+        }
+
+        // Preview Specifications File
+        public function viewProjectsSpecifications( $id ){
+            try{
+                $id = filterInput( $id ) ;
+                if( !$id ){ throw new exception( "Please select a Project!" ) ; }
+                
+                $projects = $this -> projects ;
+                if( !count($projects) ){ return FALSE ; }
+                $specificationsFile = "" ;
+                for( $i = 0 ; $i < count($projects) ; $i++ ){
+                    $current = $projects[$i] ;
+                    $projectID = $current['ID'] ;
+                    if( $projectID == $id ){
+                        $specificationsFile = $current['specifications'] ;
+                        break ;
+                    }elseif( $i == count($projects)-1 ){
+                        throw new exception( "Cannot find specification file!" ) ;
+                    }
+                }
+                if( is_file($specificationsFile) ){
+                    return $specificationsFile ;
+                }else{
+                    return FALSE ;
+                }
+
+            }catch( Exception $e ){
+                return $e -> getMessage() ;
+            }
+        }
+
+        // Setting Additions/Subtractions
+        public function setProjectAdditions( $id , $amount , $operationType , $date , $notes=null ){
+            try{
+                $id = filterInput( $id ) ;
+                $amount = filterInput( $amount ) ;
+                $operationType = filterInput( $operationType ) ;
+                $date = filterInput( $date ) ;
+                $notes = filterInput( $notes ) ;
+
+                $amount = intval( $amount ) ;
+                if( $amount < 0 ){
+                    throw new exception( "Negative Values are Not Allowed!" ) ;
+                }
+                
+                if( !$date ){
+                    throw new exception( "Date is Required!" ) ;
+                }else{
+                    $Pdate = str_replace( "/" , " " , $date ) ;
+                    $Pdate = sscanf( $Pdate , "%s %s %s" ) ;
+                    list( $year , $month , $day ) = $Pdate ;
+                    if( !@checkdate( $month , $day , $year ) ){
+                        throw new exception( "Invalid Date Format!" ) ;
+                    }
+                }
+
+                $projects = $this -> projects ;
+                $targetFile = "" ;
+                if( !count($projects) ){ return FALSE ; }
+                for( $i = 0 ; $i < count($projects) ; $i++ ){
+                    $current = $projects[$i] ;
+                    $projectID = $current['ID'] ;
+                    if( $projectID == $id ){
+                        $targetFile = $current['additionAndSubtraction'] ;
+                        break ;
+                    }elseif( $i == count($projects)-1 ){
+                        throw new exception( "No Results Found!" ) ;
+                    }
+                }
+                $operationID = uniqid() ;
+
+                $operationID = str_replace( " " , "_" , $operationID ) ;
+                $amount = str_replace( " " , "_" , $amount ) ;
+                $operationType = str_replace( " " , "_" , $operationType ) ;
+                $date = str_replace( " " , "_" , $date ) ;
+                if( $notes ){
+                    $notes = nl2br( $notes , FALSE ) ;
+                    $notes = str_replace( " " , "_" , $notes ) ;
+                    $notes = bin2hex( $notes ) ;
+                }
+
+                $line = "$operationID $amount $operationType $date $notes \n" ;
+                if( $file = fopen( "$targetFile" , "a" ) ){
+                    if( fwrite( $file , $line ) ){
+                        fclose( $file ) ;
+                        return TRUE ;
+                    }
+                }else{
+                    return FALSE ;
+                }
+
+            }catch( Exception $e ){
+                return $e -> getMessage() ;
+            }
+            
+        }
+
+        // Getting addition/subtraction
+        public function getProjectAdditions( $id ){
+            try{
+                $id = filterInput( $id ) ;
+                if( !$id ){ throw new exception( "Please select a project!" ) ; }
+
+                $projects = $this -> projects ;
+                if( !count($projects) ){ return FALSE ; }
+                $targetFile = "" ;
+                for( $i = 0 ; $i < count($projects) ; $i++ ){
+                    $current = $projects[$i] ;
+                    $projectID = $current['ID'] ;
+                    if( $projectID == $id ){
+                        $targetFile = $current['additionAndSubtraction'] ;
+                        break ;
+                    }elseif( $i == count($projects)-1 ){
+                        throw new exception( "No Results Found!" ) ;
+                    }
+                }
+                if( $file = fopen( "$targetFile" , "r" ) ){
+                    $finalResult = [] ;
+                    while( $line = fgets( $file ) ){
+                        $line = sscanf( $line , "%s %s %s %s %s" ) ;
+                        list( $operationID , $amount , $operationType , $date , $notes ) = $line ;
+                        if( $operationID ){
+                            $operationID = str_replace( "_" , " " , $operationID ) ;
+                            $amount = str_replace( "_" , " " , $amount ) ;
+                            $operationType = str_replace( "_" , " " , $operationType ) ;
+                            $date = str_replace( "_" , " " , $date ) ;
+                            if( $notes = hex2bin($notes) ){
+                                $notes = str_replace( "_" , " " , $notes ) ;
+                                $notes = stripslashes( $notes ) ;
+                            }else{
+                                $notes = str_replace( "_" , " " , $notes ) ;
+                                $notes = stripslashes( $notes ) ;
+                            }
+                            $x = [ "amount" => $amount , "operationType" => $operationType , "date" => $date , "notes" => $notes ] ;
+                            array_push( $finalResult , $x ) ;
+                        }
+                    }
+                    fclose( $file ) ;
+                    if( count($finalResult) ){
+                        return $finalResult ;
+                    }else{
+                        return FALSE ;
+                    }
+                    
+                }else{
+                    return FALSE ;
+                }
+            }catch( Exception $e ){
+                return $e -> getMessage() ;
+            }
+            
+        }
+
+
     }
+
+    
 ?>
