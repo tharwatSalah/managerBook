@@ -176,28 +176,22 @@
                 if( empty($username) || empty($password) ){
                     throw new exception( "User name AND Password are Required!" ) ;
                 }else{ 
-                    if( !$allUsers ){
-                        echo "No Users found from Login!<br>" ;
-                    }
-
-                    for( $i = 0 ; $i < count($allUsers) ; $i++ ){
-                        if( !$currentUser = $allUsers[$i] ){
-                            // set a method to feedback error result
-                            throw new exception( "An error occurred!" ) ;
-                        }else{
-                            $user2find = $currentUser['userName'] ;
-                            $password2find = $currentUser['password'] ;
-                        }
+                    if( count($allUsers) ){
+                       for( $i = 0 ; $i < count($allUsers) ; $i++ ){
+                        $currentUser = $allUsers[$i] ;
+                        $user2find = $currentUser['userName'] ;
+                        $password2find = $currentUser['password'] ;
                         if( $username == $user2find && $password == $password2find ){
-                            $username = myEncoding( $username ) ;
-                            $password = myEncoding( $password ) ;
-
                             session_start() ;
-                            $_SESSION['username'] = $username ;
-                            $_SESSION['password'] = $password ;
+                            
+                            $_SESSION['userID'] = $currentUser['ID'] ;
                             header( "location:ui/test.php" ) ;
+                            break ;
+                            exit() ;
                         }elseif( $i == count( $allUsers )-1 ){
                             throw new exception( "User name OR Password is incorrect!<br>" ) ;
+                        }
+
                         }
                     }
                 }
@@ -310,7 +304,6 @@
                     }
                 }
                 
-                
                 // filter a password
                 if( empty($password) ){
                     throw new exception( "Password is required!" ) ;
@@ -411,6 +404,7 @@
                 
                 $mysqli = new mysqli( host , username , password , dbname ) or die( "Failed to connect to Database!" ) ;
                 if( $mysqli -> query($sql) ){
+                    $userID = $mysqli -> insert_id ;
                     // Security file prepare
                     $file = fopen( "$securityQuestions" , "w" ) ;
                     fwrite( $file , "$qid1 $question1 $q1 \n" ) ;
@@ -423,13 +417,9 @@
                     // User Greeding
                     $this -> newUserGreeding( $firstname , $lastname ) ;
                     $mysqli -> close() ;
-
-                    $username = myEncoding( $username ) ;
-                    $password = myEncoding( $password ) ;
-
+                    
                     session_start() ;
-                    $_SESSION['username'] = $username ;
-                    $_SESSION['password'] = $password ;
+                    $_SESSION['userID'] = $userID ;
                     header( "refresh:5 ; url=ui/test.php" ) ;
                     exit() ;
                 }else{
@@ -452,7 +442,7 @@
     # This class makes sure that a user is the owner of an acount
 
     class forgetPassword extends main{
-        //public $userID ;
+        public $userID ;
         public $username ;
         public $questions ;
         public $answers ;
@@ -477,10 +467,10 @@
                             array_push( $userAnswers , $answer ) ;
                         }
                         if( $user = $result['userInfo'] ){
-                            //$userID = $user['userID'] ;
+                            $userID = $user['userID'] ;
                             $username = $user['username'] ;
                         }
-                        //$this -> userID = $userID ;
+                        $this -> userID = $userID ;
                         $this -> username = $username ;
                         $this -> questions = $questions ;
                         $this -> answers = $userAnswers ;
@@ -541,6 +531,7 @@
         # Reset The Password
         # Changing the Password of a User if all answers are Correct
         public function resetPassword( $username , $pas1 , $pas2 ){
+            $this -> checkUser( $username ) ;
             try{
                 $username = filterInput( $username ) ;
                 $pas1 = filterInput( $pas1 ) ;
@@ -562,13 +553,10 @@
                         if( $mysqli -> real_query($sql) ){
                             echo "Password Changed successfully.<br>" ;
                             $mysqli -> close() ;
-                            // Encode Username and Password
-                            $username = myEncoding( $username ) ;
-                            $password = myEncoding( $password ) ;
 
                             session_start() ;
-                            $_SESSION['username'] = $username ;
-                            $_SESSION['password'] = $password ;
+                            $id = $this -> userID ;
+                            $_SESSION['userID'] = $id ;
                             header( "refresh:5 ; url=ui/test.php" ) ;
                             exit() ;
                         }else{

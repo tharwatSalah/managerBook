@@ -3,7 +3,7 @@
     if( !$_SESSION ){
         header( "location:test.php" ) ;
         exit() ;
-    }elseif( !$_SESSION['username'] || !$_SESSION['password'] ){
+    }elseif( !$_SESSION['userID'] ){
         header( "location:test.php" ) ;
         exit() ;
     }
@@ -25,13 +25,13 @@
     }
     
     # Log-IN
-    $username=$_SESSION['username'] ;
-    $password=$_SESSION['password'] ;
-    $operations = new operations( $username , $password ) ;
+    $userID = $_SESSION['userID'] ;
+    $operations = new operations( $userID ) ;
     if( is_string($operations) ){
         die( $operations ) ;
     }
 
+    // A not important query to show some Unnecessary information
     $companies = $operations -> companies ;
     if( @count($companies) ){
         
@@ -39,29 +39,6 @@
             $current = $companies[$i] ;
             #print_r( $current ) ;
             #echo "<br>" ;
-        }
-    }
-    
-
-    # Gitting Table Name for ( operations ) Class
-    if( isset( $_GET['target'] ) ){
-        $table = filterInput( $_GET['target'] ) ;
-    }
-
-    # Specify Certain table-names ( Extra security )
-    if( isset($table) ){
-        $table = strtolower( $table ) ;
-        switch( $table ){
-            case "homepage" ; $table = "homepage" ; break ;
-            case "companies" : $table = "companies" ; break ;
-            case "projects" : $table = "projects" ; break ;
-            case "errands" : $table = "errands" ; break ;
-            case "suppliers" ; $table = "suppliers" ; break ;
-            case "workers" ; $table = "workers" ; break ;
-            case "purchases" : $table = "purchases" ; break ;
-            case "bills" ; $table = "bills" ; break ;
-            case "statistics" ; $table = "statistics" ; break ;
-            default : logOut() ;
         }
     }
 
@@ -401,7 +378,7 @@
     // All projects
     $allProjects = $operations -> projects ;
     $userAllCompanies = $operations -> companies ;
-    if( count($allProjects) ){
+    if( @count($allProjects) ){
         ob_start() ;
         echo "<table>" ;
         echo "<tr> <th>Project Name</th> <th>Company Name</th> <th>Address</th> <th>Central</th> <th>Governorate</th> <th>Delivery Date</th> <th>Agreed</th> <th>Additions and Subtractions</th> <th>Payed</th> <th>Remaining</th> <th>Status</th> <th>Specifications</th> <th>Photos</th> <th>Design</th> <th>Notes</th> <th>Evaluation</th> </tr>" ;
@@ -684,7 +661,7 @@
         }
 
         $userAllCompanies = $operations -> companies ;
-        if( count($allProjects) ){
+        if( @count($allProjects) ){
             ob_start() ;
             echo "<table>" ;
             echo "<tr> <th>Project Name</th> <th>Company Name</th> <th>Address</th> <th>Central</th> <th>Governorate</th> <th>Delivery Date</th> <th>Agreed</th> <th>Additions and Subtractions</th> <th>Payed</th> <th>Remaining</th> <th>Status</th> <th>Specifications</th> <th>Photos</th> <th>Design</th> <th>Notes</th> <th>Evaluation</th> </tr>" ;
@@ -1000,36 +977,5 @@
             $viewAddAndSubResults = ob_get_clean() ;
         }
     }
-    /*
-        $addAndSubToView = $_GET['viewAddAndSub'] ;
-        $addAndSubToView = filterInput( $addAndSubToView ) ;
-
-        ob_start() ;
-        if( $file = fopen( $addAndSubToView , "r" ) ){
-            echo "<table>" ;
-            echo "<tr> <th>Amount</th> <th>Operation Type</th> <th>Date</th> <th>Notes</th> </tr>" ;
-            while( $line = fgets( $file ) ){
-                $line = sscanf( $line , "%s %s %s %s %s" ) ;
-                list( $id , $amount , $operationType , $date , $notes ) = $line ;
-                $id = str_replace( "_" , " " , $id ) ;
-                $amount = str_replace( "_" , " " , $amount ) ;
-                $operationType = str_replace( "_" , " " , $operationType ) ;
-                $date = str_replace( "_" , " " , $date ) ;
-
-                $notes = hex2bin( $notes ) ;
-                $notes = str_replace( "_" , " " , $notes ) ;
-                $notes = stripslashes( $notes ) ;
-                if( $id ){
-                    echo "<tr> <td>$amount</td> <td>$operationType</td> <td>$date</td> <td>$notes</td> </tr>" ;
-                }
-            }
-            fclose( $file ) ;
-            echo "</table>" ;
-        }else{
-            echo "No Results!" ;
-        }
-        $viewAddAndSubResults = ob_get_clean() ;
-    }
-    */
 
 ?>

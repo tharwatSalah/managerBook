@@ -179,7 +179,7 @@
         public $bills ;
 
         # Log IN
-        public function __construct( $username , $password ){
+        public function __construct( $userID ){
             try{
                 // get all uers
                 $mysqli = new mysqli( host , username , password , dbname ) or die( "Failed to connect to the database!" ) ;
@@ -195,22 +195,20 @@
                 $mysqli -> close() ;
 
                 // Start searching for a user
-                if( empty($username) || empty($password) ){
+                if( !$userID || empty($userID) ){
                     throw new exception( "User name AND Password are Required!" ) ;
                 }else{
-                    $username = filterInput($username) ;
-                    $username = stripslashes( $username ) ;
+                    $userID = filterInput($userID) ;
+                    $userID = stripslashes( $userID ) ;
 
-                    $password = filterInput($password) ;
-                    $password = stripslashes( $password ) ;
                     // Fetch all users to check 
                     $allUsers = $this -> users ;
-                    if( !$allUsers ){
-                        echo "No Users found from Login!<br>" ;
-                    }
 
-                    for( $i = 0 ; $i < count($allUsers) ; $i++ ){
-                        if( !$currentUser = $allUsers[$i] ){
+                    for( $i = 0 ; $i < @count($allUsers) ; $i++ ){
+                        $currentUser = $allUsers[$i] ;
+                        $uID = $currentUser['ID'] ;
+                        /*
+                        if( ! ){
                             // set a method to feedback error result
                             throw new exception( "An error occurred!" ) ;
                         }else{
@@ -221,12 +219,12 @@
                             $password2find = $currentUser['password'] ;
                             $password2find = myEncoding( $password2find ) ;
                         }
-                        if( $username == $user2find && $password == $password2find ){
+                        */
+                        if( $uID == $userID ){
                             $this -> userData = $currentUser ;
+                            $id = $uID ;
                             
-                            $id = $currentUser['ID'] ;
-                            $userName = $currentUser['userName'] ;
-                            if( $id && $userName ){
+                            if( $id ){
                                 $sql = "SELECT * FROM compnies WHERE userID = $id;" ;
                                 $sql .= "SELECT * FROM projects WHERE userID = $id;" ;
                                 $sql .= "SELECT * FROM errands WHERE userID = $id;" ;
@@ -246,7 +244,6 @@
                                         }
                                         $table = $field[0] -> table ;
                                         $table = strtolower($table) ;
-                                        # $data = @mysqli_fetch_all( $result , MYSQLI_ASSOC ) or die( "Cannot fetch the data!" ) ;
                                         $data = @mysqli_fetch_all( $result , MYSQLI_ASSOC ) ;
                                         $data = prepareResult( $data ) ;
                                         switch($table){
@@ -265,8 +262,8 @@
                                 }else{
                                     $error = $mysqli -> error_list ;
                                     $err = $error[0]['error'] ;
-                                    throw new exception( "$err" ) ;
                                     $mysqli -> close() ;
+                                    throw new exception( "$err" ) ;
                                 }
                             }else{
                                 throw new exception( "Sorry. Something is wrong!" ) ;
@@ -310,7 +307,7 @@
                         }
                         return $finalResult ;
                     }else{
-                        $companies = array_reverse( $companies ) ;
+                        $companies = @array_reverse( $companies ) ;
                         return $companies ;
                     }
                 }
@@ -335,11 +332,11 @@
                         #return $result ;
                     }elseif( $value ){
                         if( $value == "allProjects" ){ # All Projects
-                            $projects = array_reverse( $projects ) ;
+                            $projects = @array_reverse( $projects ) ;
                             return $projects ;
                         }elseif( $value == "currentProjects" ){ # Current Projects
                             $finalResult = [] ;
-                            for( $i = 0 ; $i < count($projects) ; $i++ ){
+                            for( $i = 0 ; $i < @count($projects) ; $i++ ){
                                 $currentProject = $projects[$i] ;
                                 $projectStatus = $currentProject['status'] ;
                                 $projectStatus = strtolower( $projectStatus ) ;
@@ -353,7 +350,7 @@
                             return $finalResult ;
                         }elseif( $value == "delivered" ){ # Delivered Projects
                             $finalResult = [] ;
-                            for( $i = 0 ; $i < count($projects) ; $i++ ){
+                            for( $i = 0 ; $i < @count($projects) ; $i++ ){
                                 $currentProject = $projects[$i] ;
                                 $projectStatus = $currentProject['status'] ;
                                 $projectStatus = strtolower( $projectStatus ) ;
@@ -365,7 +362,7 @@
                             return $finalResult ;
                         }elseif( $value == "canceled" ){ # Canceled Projects
                             $finalResult = [] ;
-                            for( $i = 0 ; $i < count($projects) ; $i++ ){
+                            for( $i = 0 ; $i < @count($projects) ; $i++ ){
                                 $currentProject = $projects[$i] ;
                                 $projectStatus = $currentProject["status"] ;
                                 $projectStatus = strtolower( $projectStatus ) ;
@@ -720,7 +717,7 @@
                 $companyName = strtolower( $companyName ) ;
                 $companies = $this -> companies ;
                 $companyID = "" ;
-                for( $i = 0 ; $i < count($companies) ; $i++ ){
+                for( $i = 0 ; $i < @count($companies) ; $i++ ){
                     $current = $companies[$i] ;
                     $cN = $current['name'] ;
                     $cN = strtolower( $cN ) ;
@@ -1036,7 +1033,7 @@
                             $paymentAmount = str_replace( "_" , " " , $paymentAmount ) ;
                             $paymentType = str_replace( "_" , " " , $paymentType ) ;
 
-                            $paymentNotes = hex2bin( $paymentNotes ) ;
+                            $paymentNotes = @hex2bin( $paymentNotes ) ;
                             $paymentNotes = str_replace( "_" , " " , $paymentNotes ) ;
                             $paymentNotes = stripslashes( $paymentNotes ) ;
 
@@ -1244,6 +1241,19 @@
             }
             
         }
+
+
+        //_________________________________________________________________________________________________________________________________________________________________________________________________//
+        # End Of Projects
+
+        # Start with Errands Section
+        //_________________________________________________________________________________________________________________________________________________________________________________________________//
+
+
+        # Errands Section
+        #------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------#
+
+
 
 
     }
