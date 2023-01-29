@@ -225,7 +225,11 @@
                 <form method="post" action="<?php echo htmlspecialchars( $_SERVER['PHP_SELF'] ) ; ?>" >
                     <input type="hidden" name="specificationsToFetch" value="<?= @$targetSpecificationsFile ?>" > <br>
                     <textarea name="newProjectSpecifications" placeholder="Specifications..."></textarea> <br>
+<<<<<<< HEAD
                     <input type="submit" name="modify_ProjectSpecifications" value="Change">
+=======
+                    <input type="submit" name="modifyProjectSpecifications" value="Change">
+>>>>>>> 9b66a40846db7a190dd7236db37ad8241499e53d
                 </form>
                 <?= @$modifyProjectSpecificationsFileResult ?>
             </div>

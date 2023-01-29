@@ -500,12 +500,21 @@
                     }
                     
                     $changeProjectStatus = "<a href='?changeStatus=$projectID'> change </a>" ; # change project status
+<<<<<<< HEAD
                     $receiveACachPayment = "<a href='?receiveACachePayment=$projectID'> Receive </a>" ; # receive a payment
                     $viewAllPayments = "<a href='?viewAllPayments=$projectID' title='View all Payments'> $payed </a>" ; # preview all payments
                     $settingAnAdditionAndSubtraction = "<a href='?addAndSub=$projectID'> add </a>" ; # setting an addition and subtraction
                     $viewAdditionsAndSubtractions = "<a href='?viewAddAndSub=$projectID'> $theTotal </a>" ; # preview all additions and subtractions
                     $modifyProjectSpecifications = "<a href='?modifyProjectSpecifications=$projectID'> Modify Content </a>" ; # modify specifications
                     $viewProjectSpecifications = "<a href='?viewProjectSpecifications=$projectID'> Read Content</a>" ; # preview specifications
+=======
+                    $receiveACachPayment = "<a href='?receiveACachePayment=$projectPaymentFile'> Receive </a>" ; # receive a payment
+                    $viewAllPayments = "<a href='?viewAllPayments=$projectPaymentFile' title='View all Payments'> $payed </a>" ; # preview all payments
+                    $settingAnAdditionAndSubtraction = "<a href='?addAndSub=$additionAndSubtraction'> add </a>" ; # setting an addition and subtraction
+                    $viewAdditionsAndSubtractions = "<a href='?viewAddAndSub=$additionAndSubtraction'> $theTotal </a>" ; # preview all additions and subtractions
+                    $modifyProjectSpecifications = "<a href='?modifyProjectSpecifications=$projectSpecifications'> Modify Content </a>" ; # modify specifications
+                    $viewProjectSpecifications = "<a href='?viewProjectSpecifications=$projectSpecifications'> Read Content</a>" ; # preview specifications
+>>>>>>> 9b66a40846db7a190dd7236db37ad8241499e53d
 
                     # gitting the remaining amount
                     $projectRemaining = @($subRemaining - $payed) ; 
@@ -643,12 +652,21 @@
                     }
                     
                     $changeProjectStatus = "<a href='?changeStatus=$projectID'> change </a>" ; # change project status
+<<<<<<< HEAD
                     $receiveACachPayment = "<a href='?receiveACachePayment=$projectID'> Receive </a>" ; # receive a payment
                     $viewAllPayments = "<a href='?viewAllPayments=$projectID' title='View all Payments'> $payed </a>" ; # preview all payments
                     $settingAnAdditionAndSubtraction = "<a href='?addAndSub=$projectID'> add </a>" ; # setting an addition and subtraction
                     $viewAdditionsAndSubtractions = "<a href='?viewAddAndSub=$projectID'> $theTotal </a>" ; # preview all additions and subtractions
                     $modifyProjectSpecifications = "<a href='?modifyProjectSpecifications=$projectID'> Modify Content </a>" ; # modify specifications
                     $viewProjectSpecifications = "<a href='?viewProjectSpecifications=$projectID'> Read Content</a>" ; # preview specifications
+=======
+                    $receiveACachPayment = "<a href='?receiveACachePayment=$projectPaymentFile'> Receive </a>" ; # receive a payment
+                    $viewAllPayments = "<a href='?viewAllPayments=$projectPaymentFile' title='View all Payments'> $payed </a>" ; # preview all payments
+                    $settingAnAdditionAndSubtraction = "<a href='?addAndSub=$additionAndSubtraction'> add </a>" ; # setting an addition and subtraction
+                    $viewAdditionsAndSubtractions = "<a href='?viewAddAndSub=$additionAndSubtraction'> $theTotal </a>" ; # preview all additions and subtractions
+                    $modifyProjectSpecifications = "<a href='?modifyProjectSpecifications=$projectSpecifications'> Modify Content </a>" ; # modify specifications
+                    $viewProjectSpecifications = "<a href='?viewProjectSpecifications=$projectSpecifications'> Read Content</a>" ; # preview specifications
+>>>>>>> 9b66a40846db7a190dd7236db37ad8241499e53d
 
                     # gitting the remaining amount
                     $projectRemaining = @($subRemaining - $payed) ; 
@@ -783,12 +801,21 @@
                 }
                 
                 $changeProjectStatus = "<a href='?changeStatus=$projectID'> change </a>" ; # change project status
+<<<<<<< HEAD
                 $receiveACachPayment = "<a href='?receiveACachePayment=$projectID'> Receive </a>" ; # receive a payment
                 $viewAllPayments = "<a href='?viewAllPayments=$projectID' title='View all Payments'> $payed </a>" ; # preview all payments
                 $settingAnAdditionAndSubtraction = "<a href='?addAndSub=$projectID'> add </a>" ; # setting an addition and subtraction
                 $viewAdditionsAndSubtractions = "<a href='?viewAddAndSub=$projectID'> $theTotal </a>" ; # preview all additions and subtractions
                 $modifyProjectSpecifications = "<a href='?modifyProjectSpecifications=$projectID'> Modify Content </a>" ; # modify specifications
                 $viewProjectSpecifications = "<a href='?viewProjectSpecifications=$projectID'> Read Content</a>" ; # preview specifications
+=======
+                $receiveACachPayment = "<a href='?receiveACachePayment=$projectPaymentFile'> Receive </a>" ; # receive a payment
+                $viewAllPayments = "<a href='?viewAllPayments=$projectPaymentFile' title='View all Payments'> $payed </a>" ; # preview all payments
+                $settingAnAdditionAndSubtraction = "<a href='?addAndSub=$additionAndSubtraction'> add </a>" ; # setting an addition and subtraction
+                $viewAdditionsAndSubtractions = "<a href='?viewAddAndSub=$additionAndSubtraction'> $theTotal </a>" ; # preview all additions and subtractions
+                $modifyProjectSpecifications = "<a href='?modifyProjectSpecifications=$projectSpecifications'> Modify Content </a>" ; # modify specifications
+                $viewProjectSpecifications = "<a href='?viewProjectSpecifications=$projectSpecifications'> Read Content</a>" ; # preview specifications
+>>>>>>> 9b66a40846db7a190dd7236db37ad8241499e53d
 
                 # gitting the remaining amount
                 $projectRemaining = @($subRemaining - $payed) ; 
@@ -841,6 +868,7 @@
         $targetSpecificationsFile = $_GET['modifyProjectSpecifications'] ;
     }
     //----------------------------------//
+<<<<<<< HEAD
     if( isset( $_POST['modify_ProjectSpecifications'] ) ){
         $projectID = $_POST['specificationsToFetch'] ;
         $content = $_POST['newProjectSpecifications'] ;
@@ -858,10 +886,31 @@
             echo $result ;
             $modifyProjectSpecificationsFileResult = ob_get_clean() ; ;
         }
+=======
+    if( isset( $_POST['modifyProjectSpecifications'] ) ){
+        $specificationTarget = $_POST['specificationsToFetch'] ;
+        $content = $_POST['newProjectSpecifications'] ;
+        $specificationTarget = filterInput( $specificationTarget ) ;
+        $content = filterInput( $content ) ;
+
+        ob_start() ;
+        if( $file = fopen( "$specificationTarget" , "w" ) ){
+            if( fwrite( $file , $content ) ){
+                echo "Specifications File Modified Successfully!" ;
+                fclose( $file )  ;
+            }else{
+                echo "Failed to modify Specifications file!" ;
+            }
+        }else{
+            echo "Please Select a project!" ;
+        }
+        $modifyProjectSpecificationsFileResult = ob_get_clean() ;
+>>>>>>> 9b66a40846db7a190dd7236db37ad8241499e53d
     }
 
     // Preview a Project specifications
     if( isset( $_GET['viewProjectSpecifications'] ) ){
+<<<<<<< HEAD
         $projectID = $_GET['viewProjectSpecifications'] ;
         $result = $operations -> viewProjectsSpecifications( $projectID ) ;
         ob_start() ;
@@ -880,6 +929,22 @@
                 $viewProjectSpecificationsResult = ob_get_clean() ;
             }
         }
+=======
+        $specificationsFileToRead = $_GET['viewProjectSpecifications'] ;
+        $specificationsFileToRead = filterInput( $specificationsFileToRead ) ;
+        ob_start() ;
+        if( $file = @fopen( $specificationsFileToRead , "r" ) ){
+            while( !feof($file) ){
+                $line = fgets( $file ) ;
+                $line = stripslashes( $line ) ;
+                echo "$line <br>" ;
+            }
+            fclose( $file ) ;
+        }else{
+            echo "Specifications Not Found!" ;
+        }
+        $viewProjectSpecificationsResult = ob_get_clean() ;
+>>>>>>> 9b66a40846db7a190dd7236db37ad8241499e53d
     }
 
 
@@ -892,16 +957,34 @@
         $p_year = $_POST['projects_payments_paymentYear'] ;
         $p_month = $_POST['projects_payments_paymentMonth'] ;
         $p_day = $_POST['projects_payments_paymentDay'] ;
+<<<<<<< HEAD
 
         $projectID = $_POST['projects_payments_file'] ;
         $paymentAmount = $_POST['projects_payments_paymentAmount'] ;
         $paymentType = $_POST['projects_paymentType'] ;
         $paymentNotes = $_POST['projects_payments_paymentNotes'] ;
+=======
+        $p_year = filterInput( $p_year ) ;
+        $p_month = filterInput( $p_month ) ;
+        $p_day = filterInput( $p_day ) ;
+
+        $paymentsFileToUse = $_POST['projects_payments_file'] ;
+        $paymentAmount = $_POST['projects_payments_paymentAmount'] ;
+        $paymentType = $_POST['projects_paymentType'] ;
+        $paymentNotes = $_POST['projects_payments_paymentNotes'] ;
+
+        $paymentsFileToUse = filterInput( $paymentsFileToUse ) ;
+        $paymentID = uniqid( "pays" ) ;
+        $paymentAmount = filterInput( $paymentAmount ) ;
+        $paymentType = filterInput( $paymentType ) ;
+        $paymentNotes = filterInput( $paymentNotes ) ;
+>>>>>>> 9b66a40846db7a190dd7236db37ad8241499e53d
         if( !($p_year && $p_month && $p_day) ){
             $newPaymentDate = "" ;
         }else{
             $newPaymentDate = "$p_year/$p_month/$p_day" ;
         }
+<<<<<<< HEAD
         $result = $operations -> receiveNewPayment( $projectID , $newPaymentDate , $paymentAmount , $paymentType , $paymentNotes ) ;
         if( $result === TRUE ){
             ob_start() ;
@@ -912,10 +995,44 @@
             echo "$result" ;
             $receiveANewPaymentResult = ob_get_clean() ;
         }
+=======
+        // replace white spaces to be easy to fetch
+        $paymentID = str_replace( " " , "_" , $paymentID ) ;
+        $paymentAmount = str_replace( " " , "_" , $paymentAmount ) ;
+        $paymentType = str_replace( " " , "_" , $paymentType ) ;
+        $newPaymentDate = str_replace( " " , "_" , $newPaymentDate ) ;
+        
+        $paymentNotes = str_replace( " " , "_" , $paymentNotes ) ;
+        $paymentNotes = nl2br( $paymentNotes , FALSE ) ;
+        $paymentNotes = bin2hex( $paymentNotes ) ;
+        
+        # if( strlen($paymentID) < 35 ){ $paymentID = str_pad( $paymentID , 35 , "_" , STR_PAD_RIGHT ) ; }
+        # if( strlen($newPaymentDate) < 10 ){ $newPaymentDate = str_pad( $newPaymentDate , 10 , "_" , STR_PAD_RIGHT ) ; }
+        # if( strlen($paymentAmount) < 6 ){ $amount = str_pad( $amount , 6 , "_" , STR_PAD_RIGHT ) ; }
+        # if( strlen($paymentType) < 10 ){ $amount = str_pad( $paymentType , 10 , "_" , STR_PAD_RIGHT ) ; }
+        # if( strlen($paymentNotes) < 250 ){ $paymentNotes = str_pad($paymentNotes , 250 , "_" , STR_PAD_RIGHT) ; }
+
+        $line = "$paymentID $newPaymentDate $paymentAmount $paymentType $paymentNotes \n" ;
+        echo "<h4>$line</h4>" ;
+
+        ob_start() ;
+        if( $file = @fopen( "$paymentsFileToUse" , "a" ) ){
+            if( fwrite( $file , $line ) ){
+                echo "New Payment Stored successfully." ;
+                fclose( $file ) ;
+            }else{
+                echo "Payment Failed!" ;
+            }
+        }else{
+            echo "Cannot find Payments Data!" ;
+        }
+        $receiveANewPaymentResult = ob_get_clean() ;
+>>>>>>> 9b66a40846db7a190dd7236db37ad8241499e53d
     }
 
     // Preview all payments
     if( isset( $_GET['viewAllPayments'] ) ){
+<<<<<<< HEAD
         $projectID = $_GET['viewAllPayments'] ;
         $result = $operations -> previewAllPayments( $projectID ) ;
         if( is_string( $result ) ){
@@ -941,6 +1058,40 @@
                 $viewAllPaymentsResults = ob_get_clean() ;
             }
         }
+=======
+        $paymentsFileToRead = $_GET['viewAllPayments'] ;
+        $paymentsFileToRead = filterInput( $paymentsFileToRead ) ;
+
+        ob_start() ;
+        if( $file = fopen( "$paymentsFileToRead" , "r" ) ){
+            echo "<table>" ;
+            echo "<tr> <th>Date</th> <th>Amount</th> <th>Payment Type</th> <th>Notes</th> </tr>"  ;
+            while( $line = fgets( $file ) ){
+                $data = sscanf( $line , "%s %s %s %s %s" ) ;
+                list( $id , $date , $amount , $p_type , $notes ) = $data ;
+                if( $id ){
+                    $date = stripslashes( $date ) ;
+                    $amount = stripslashes( $amount ) ;
+                    $p_type = stripslashes( $p_type ) ;
+                    $notes = stripslashes( $notes ) ;
+
+                    $date = str_replace( "_" , " " , $date ) ;
+                    $amount = str_replace( "_" , " " , $amount ) ;
+                    $p_type = str_replace( "_" , " " , $p_type ) ;
+
+                    $notes = hex2bin( $notes ) ;
+                    $notes = stripslashes( $notes ) ;
+                    $notes = str_replace( "_" , " " , $notes ) ;
+                    echo "<tr> <td>$date</td> <td>$amount</td> <td>$p_type</td> <td>$notes</td> </tr>" ;
+                }
+            }
+            echo "</table>" ;
+            fclose( $file ) ;
+        }else{
+            echo "Failed to collect Payments Data!" ;
+        }
+        $viewAllPaymentsResults = ob_get_clean() ;
+>>>>>>> 9b66a40846db7a190dd7236db37ad8241499e53d
     }
 
 
@@ -954,6 +1105,7 @@
         $month = $_POST['addAndSubMonth'] ;
         $day = $_POST['addAndSubDay'] ;
 
+<<<<<<< HEAD
         $projectID = $_POST['addAndSubFile'] ;
         $amount = $_POST['addAndSubAmount'] ;
         $operationType = $_POST['addAndSubOperationsType'] ;
@@ -972,11 +1124,58 @@
             echo "Failed!" ;
             $settingAdditionAndSubtractionResults = ob_get_clean() ;
         }
+=======
+        $year = filterInput( $year ) ;
+        $month = filterInput( $month ) ;
+        $day = filterInput( $day ) ;
+
+        $targetAdditionAndSubtractionFile = $_POST['addAndSubFile'] ;
+        $operationType = $_POST['addAndSubOperationsType'] ;
+        $amount = $_POST['addAndSubAmount'] ;
+        $notes = $_POST['addAndSubNotes'] ;
+        
+        $targetAdditionAndSubtractionFile = filterInput( $targetAdditionAndSubtractionFile ) ;
+        $operationID = uniqid() ;
+        $operationType = filterInput( $operationType ) ;
+        $amount = filterInput( $amount ) ;
+        $notes = filterInput( $notes ) ;
+        if( !( $year && $month && $day ) ){
+            $date = "empty" ;
+        }else{
+            $date = "$year/$month/$day" ;
+        }
+        
+        $operationID = str_replace( " " , "_" , $operationID ) ;
+        $operationType = str_replace( " " , "_" , $operationType ) ;
+        $amount = str_replace( " " , "_" , $amount ) ;
+        $date = str_replace( " " , "_" , $date ) ;
+
+        $notes = str_replace( " " , "_" , $notes ) ;
+        $notes = nl2br( $notes , FALSE ) ;
+        $notes = bin2hex( $notes ) ;
+
+        $line = "$operationID $amount $operationType $date $notes \n" ;
+
+        ob_start() ;
+        if( $file = @fopen( $targetAdditionAndSubtractionFile , "a" ) ){
+            if( fwrite( $file , $line ) ){
+                echo "Done." ;
+            }else{
+                echo "Failed!" ;
+            }
+            fclose( $file ) ;
+        }else{
+            echo "Please select a project!" ;
+        }
+        $settingAdditionAndSubtractionResults = ob_get_clean() ;
+        
+>>>>>>> 9b66a40846db7a190dd7236db37ad8241499e53d
     }
 
     
     // Preview addition/subtraction of a Project
     if( isset( $_GET['viewAddAndSub'] ) ){
+<<<<<<< HEAD
         $projectID = $_GET['viewAddAndSub'] ;
         $result = $operations -> getProjectAdditions( $projectID ) ;
         ob_start() ;
@@ -1001,6 +1200,8 @@
         }
     }
     /*
+=======
+>>>>>>> 9b66a40846db7a190dd7236db37ad8241499e53d
         $addAndSubToView = $_GET['viewAddAndSub'] ;
         $addAndSubToView = filterInput( $addAndSubToView ) ;
 
@@ -1030,6 +1231,9 @@
         }
         $viewAddAndSubResults = ob_get_clean() ;
     }
+<<<<<<< HEAD
     */
+=======
+>>>>>>> 9b66a40846db7a190dd7236db37ad8241499e53d
 
 ?>

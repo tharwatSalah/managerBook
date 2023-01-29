@@ -826,6 +826,7 @@
                     # if( strlen($paymentType) < 10 ){ $amount = str_pad( $paymentType , 10 , "_" , STR_PAD_RIGHT ) ; }
                     # if( strlen($paymentNotes) < 250 ){ $paymentNotes = str_pad($paymentNotes , 250 , "_" , STR_PAD_RIGHT) ; }
                     $line = "$paymentID $paymentDate $amount $paymentType $paymentNotes \n" ;
+<<<<<<< HEAD
                     if( $file = @fopen( "$paymentsFile" , "w" ) ){
                         fwrite( $file , $line ) ;
                         fclose( $file ) ;
@@ -833,6 +834,11 @@
                         throw new exception( "Invalid Payment" ) ;
                     }
                     
+=======
+                    $file = fopen( "$paymentsFile" , "w" ) ;
+                    fwrite( $file , $line ) ;
+                    fclose( $file ) ;
+>>>>>>> 9b66a40846db7a190dd7236db37ad8241499e53d
                 }
 
 
@@ -947,6 +953,7 @@
             }
         }
 
+<<<<<<< HEAD
         // Receive a New Payment
         public function receiveNewPayment( $id , $date , $amount , $paymentType , $notes=null ){
             try{
@@ -1245,6 +1252,8 @@
             
         }
 
+=======
+>>>>>>> 9b66a40846db7a190dd7236db37ad8241499e53d
 
     }
 
